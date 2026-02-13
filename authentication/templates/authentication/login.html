@@ -1,0 +1,37 @@
+@'
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-xl mt-10">
+    <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-800">Welcome to Nyutu ERP System</h1>
+        <p class="text-gray-500">Please sign in to continue</p>
+    </div>
+
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Sign in as:</label>
+                <select name="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                    <option value="director">Director</option>
+                    <option value="admin">Administrator</option>
+                    <option value="manager">Project Manager</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Email Address</label>
+                <input type="email" name="username" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+                Access System
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+'@ | Out-File -FilePath "authentication/templates/authentication/login.html" -Encoding utf8

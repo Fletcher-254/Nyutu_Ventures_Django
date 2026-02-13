@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-slate-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden flex flex-col justify-center min-h-[240px]">
+            <div class="relative z-10">
+                <h3 class="text-blue-400 text-xs font-black uppercase tracking-[0.3em] mb-4">Daily Insight</h3>
+                <h2 class="text-2xl md:text-3xl font-light italic leading-snug text-slate-100">"{{ daily_quote }}"</h2>
+                <p class="mt-6 text-slate-400 text-sm font-bold">— Operations Control</p>
+            </div>
+            <i class="fa-solid fa-bolt-lightning absolute right-[-20px] top-[-20px] text-[15rem] text-white/[0.03] rotate-12"></i>
+        </div>
+
+        <div class="space-y-4">
+            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Staff Present Today</p>
+                <div class="flex items-end justify-between">
+                    <h4 class="text-3xl font-black text-slate-800">14<span class="text-sm text-slate-300 ml-1">/ 18</span></h4>
+                    <span class="text-emerald-500 bg-emerald-50 text-[10px] px-2 py-1 rounded-lg font-bold">Live</span>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Operational Outflow</p>
+                <div class="flex items-end justify-between">
+                    <h4 class="text-2xl font-black text-slate-800 font-mono">KES 4,200</h4>
+                    <i class="fa-solid fa-arrow-trend-up text-rose-400"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="{% url 'vendor_list' %}" class="bg-white p-6 rounded-2xl border border-slate-100 hover:border-blue-500 hover:shadow-xl transition-all group">
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                <i class="fa-solid fa-store text-xl"></i>
+            </div>
+            <span class="block text-sm font-black text-slate-700 uppercase tracking-tight">Vendors</span>
+        </a>
+
+        <a href="{% url 'daily_attendance' %}" class="bg-white p-6 rounded-2xl border border-slate-100 hover:border-emerald-500 hover:shadow-xl transition-all group text-left">
+            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                <i class="fa-solid fa-calendar-check text-xl"></i>
+            </div>
+            <span class="block text-sm font-black text-slate-700 uppercase tracking-tight">Attendance</span>
+        </a>
+
+        <a href="{% url 'expense_create' %}" class="bg-white p-6 rounded-2xl border border-slate-100 hover:border-rose-500 hover:shadow-xl transition-all group text-left">
+            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center mb-4 group-hover:bg-rose-600 group-hover:text-white transition-all">
+                <i class="fa-solid fa-file-circle-plus text-xl"></i>
+            </div>
+            <span class="block text-sm font-black text-slate-700 uppercase tracking-tight">Log Expense</span>
+        </a>
+
+        <a href="{% url 'employee_list' %}" class="bg-white p-6 rounded-2xl border border-slate-100 hover:border-indigo-500 hover:shadow-xl transition-all group text-left">
+            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                <i class="fa-solid fa-id-card text-xl"></i>
+            </div>
+            <span class="block text-sm font-black text-slate-700 uppercase tracking-tight">Workforce</span>
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-slate-50 flex justify-between items-center">
+                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">Recent Activity</h3>
+                <button class="text-[10px] font-bold text-blue-600 hover:underline uppercase">View All Logs</button>
+            </div>
+            <div class="divide-y divide-slate-50">
+                <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition">
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 rounded-full bg-blue-500 mr-4"></div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-700">New Vendor Registered</p>
+                            <p class="text-[10px] text-slate-400 uppercase">Shell Service Station • 10:24 AM</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-200 text-xs"></i>
+                </div>
+                <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition">
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 mr-4"></div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-700">Attendance Completed</p>
+                            <p class="text-[10px] text-slate-400 uppercase">14 Staff Present • 08:15 AM</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-200 text-xs"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-amber-50 rounded-3xl border border-amber-100 p-6">
+            <h3 class="font-black text-amber-800 text-sm uppercase tracking-widest mb-4 flex items-center">
+                <i class="fa-solid fa-triangle-exclamation mr-2"></i> Immediate Tasks
+            </h3>
+            <ul class="space-y-4">
+                <li class="flex items-start">
+                    <div class="mt-1 w-4 h-4 rounded border-2 border-amber-300 flex-shrink-0"></div>
+                    <p class="ml-3 text-xs font-bold text-amber-900 leading-tight">Authorize fuel payment for KDG 123X</p>
+                </li>
+                <li class="flex items-start">
+                    <div class="mt-1 w-4 h-4 rounded border-2 border-amber-300 flex-shrink-0"></div>
+                    <p class="ml-3 text-xs font-bold text-amber-900 leading-tight">Upload utility receipt for February</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

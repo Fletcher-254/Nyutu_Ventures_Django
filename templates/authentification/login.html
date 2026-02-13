@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Authentication{% endblock %}
+
+{% block content %}
+<div class="min-h-full flex flex-col items-center justify-center py-12">
+    <div class="w-full max-w-[420px]">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-3xl shadow-xl border border-slate-100 mb-6">
+                <i class="fa-solid fa-shield-halved text-blue-600 text-3xl"></i>
+            </div>
+            <h1 class="text-4xl font-black text-slate-900 tracking-tighter">NYUTU<span class="text-blue-600">.</span></h1>
+            <p class="text-slate-400 font-medium text-sm mt-2 uppercase tracking-widest">Operations Portal</p>
+        </div>
+
+        <div class="bg-white/70 backdrop-blur-xl p-10 rounded-[2.5rem] border border-white shadow-2xl shadow-blue-900/5">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mb-6 p-4 bg-rose-50 text-rose-600 rounded-2xl text-xs font-bold border border-rose-100">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Work Email</label>
+                    {{ form.email }}
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Secret Password</label>
+                    {{ form.password }}
+                </div>
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-slate-900 text-white font-black uppercase tracking-widest text-xs rounded-2xl transition-all shadow-xl shadow-blue-200 transform hover:-translate-y-1">
+                        Enter Dashboard
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <p class="text-center mt-12 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+            Authorized Personnel Only
+        </p>
+    </div>
+</div>
+{% endblock %}

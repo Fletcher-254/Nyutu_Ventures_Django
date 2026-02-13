@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-10">
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="bg-slate-50 p-6 border-b flex justify-between items-center">
+            <h2 class="text-xl font-bold text-slate-800">Review Expense Claim</h2>
+            <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase tracking-wider">
+                {{ expense.status }}
+            </span>
+        </div>
+        
+        <div class="p-8 space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Amount</label>
+                    <p class="text-2xl font-black text-slate-900">KES {{ expense.amount }}</p>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Category</label>
+                    <p class="text-lg font-bold text-slate-700">{{ expense.category }}</p>
+                </div>
+            </div>
+
+            <div class="border-t pt-4">
+                <label class="text-[10px] font-bold text-slate-400 uppercase">Description</label>
+                <p class="text-slate-600 italic">"{{ expense.description }}"</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl text-sm text-slate-500">
+                <p><strong>Submitted By:</strong> {{ expense.submitted_by.email }}</p>
+                <p><strong>Date:</strong> {{ expense.date|date:"F d, Y H:i" }}</p>
+            </div>
+
+            <form method="POST" class="flex gap-4 pt-6">
+                {% csrf_token %}
+                <button type="submit" name="action" value="approve" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-emerald-100 transition">
+                    <i class="fa-solid fa-check mr-2"></i> Approve
+                </button>
+                <button type="submit" name="action" value="reject" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-red-100 transition">
+                    <i class="fa-solid fa-xmark mr-2"></i> Reject
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="text-center mt-6">
+        <a href="{% url 'expense_detail' expense.pk %}" class="text-slate-400 hover:text-slate-600 text-sm font-medium">
+            Cancel and Return to Details
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-10">
+    <div class="mb-8">
+        <h2 class="text-3xl font-black text-slate-800">{{ title }}</h2>
+        <p class="text-slate-500">Please ensure all receipt details are accurate before submitting.</p>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <form method="POST" enctype="multipart/form-data" class="p-8 space-y-6">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase px-1">Date of Expense</label>
+                    {{ form.date }}
+                    {% if form.date.errors %}<p class="text-red-500 text-xs">{{ form.date.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase px-1">Total Amount (KES)</label>
+                    {{ form.amount }}
+                    {% if form.amount.errors %}<p class="text-red-500 text-xs">{{ form.amount.errors.0 }}</p>{% endif %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase px-1">Category</label>
+                    {{ form.category }}
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase px-1">Payment Method</label>
+                    {{ form.payment_method }}
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-slate-500 uppercase px-1">Description / Purpose</label>
+                {{ form.description }}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-50 pt-6">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase px-1">Related Vehicle (Optional)</label>
+                    {{ form.related_vehicle }}
+                    <p class="text-[10px] text-slate-400">Required if category is "Fuel"</p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase px-1">Related Vendor (Optional)</label>
+                    {{ form.related_vendor }}
+                </div>
+            </div>
+
+            <div class="space-y-2 bg-slate-50 p-4 rounded-2xl border-2 border-dashed border-slate-200">
+                <label class="text-xs font-bold text-slate-500 uppercase px-1">Upload Receipt (Image or PDF)</label>
+                {{ form.receipt }}
+                {% if expense.receipt %}
+                    <p class="text-xs text-blue-600 font-medium mt-2">Current: {{ expense.receipt.name }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center gap-4 pt-4">
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-100 transition">
+                    Save Expense Claim
+                </button>
+                <a href="{% url 'expense_list' %}" class="px-6 py-3 text-slate-500 font-medium hover:text-slate-800 transition">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

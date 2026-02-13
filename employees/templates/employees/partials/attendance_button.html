@@ -1,0 +1,6 @@
+<button hx-post="{% url 'toggle_attendance' employee.id %}"
+        hx-target="this"
+        hx-swap="outerHTML"
+        class="px-4 py-2 rounded-full font-bold transition {% if is_present %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-600{% endif %}">
+    {% if is_present %} ✓ Present {% else %} Click to Clock-in {% endif %}
+</button>

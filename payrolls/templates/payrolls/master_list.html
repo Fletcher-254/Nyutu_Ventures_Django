@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-8 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Monthly Master Payroll</h1>
+        <div class="bg-blue-100 p-4 rounded-lg">
+            <span class="text-blue-800 font-bold text-xl">Total Due: KES {{ grand_total }}</span>
+        </div>
+    </div>
+
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="p-3 border-b">Employee Name</th>
+                <th class="p-3 border-b">Days Present</th>
+                <th class="p-3 border-b">Daily Rate</th>
+                <th class="p-3 border-b">Total Due</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in payroll_data %}
+            <tr class="border-b hover:bg-gray-50">
+                <td class="p-3">{{ item.name }}</td>
+                <td class="p-3">{{ item.days }}</td>
+                <td class="p-3">KES {{ item.rate }}</td>
+                <td class="p-3 font-bold text-gray-800">KES {{ item.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

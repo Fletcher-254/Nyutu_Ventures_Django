@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold">Daily Attendance: {{ today }}</h1>
+        <span class="text-sm text-gray-500 italic text-right">Admin/Manager Mode</span>
+    </div>
+
+    <table class="w-full text-left">
+        <thead>
+            <tr class="border-b bg-gray-50">
+                <th class="p-4">Employee</th>
+                <th class="p-4 text-center">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for emp in employees %}
+    <tr class="border-b hover:bg-gray-50">
+        <td class="p-4">
+            <div class="font-bold">{{ emp.name }}</div>
+            <div class="text-xs text-gray-400">Rate: KES {{ emp.salary_per_day }}</div>
+        </td>
+        <td class="p-4 text-center">
+            {# We check the logic directly in the IF statement instead of using WITH #}
+            {% if emp.id in present_ids %}
+                {% include "employees/partials/attendance_button.html" with employee=emp is_present=True %}
+            {% else %}
+                {% include "employees/partials/attendance_button.html" with employee=emp is_present=False %}
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-6xl mx-auto py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Expense Claims</h2>
+        <a href="{% url 'expense_create' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg">New Claim</a>
+    </div>
+
+    <form class="bg-gray-100 p-4 rounded-lg mb-6 flex gap-4">
+        <select name="status" class="p-2 rounded border">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+        </select>
+        <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded">Filter</button>
+    </form>
+
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 uppercase text-xs font-bold text-gray-500">
+                <tr>
+                    <th class="p-4">Date</th>
+                    <th class="p-4">Category</th>
+                    <th class="p-4">Amount</th>
+                    <th class="p-4">Status</th>
+                    <th class="p-4">Submitted By</th>
+                    <th class="p-4">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in expenses %}
+                <tr class="border-t hover:bg-gray-50 transition">
+                    <td class="p-4">{{ e.date|date:"Y-m-d" }}</td>
+                    <td class="p-4 font-bold">{{ e.category }}</td>
+                    <td class="p-4">KES {{ e.amount }}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded text-xs font-bold 
+                            {% if e.status == 'Approved' %}bg-green-100 text-green-700
+                            {% elif e.status == 'Rejected' %}bg-red-100 text-red-700
+                            {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+                            {{ e.status }}
+                        </span>
+                    </td>
+                    <td class="p-4 text-sm">{{ e.submitted_by.email }}</td>
+                    <td class="p-4">
+                        <a href="{% url 'expense_detail' e.pk %}" class="text-blue-600 hover:underline">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

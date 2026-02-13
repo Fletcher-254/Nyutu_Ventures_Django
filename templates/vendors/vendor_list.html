@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-6xl mx-auto py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-2xl font-bold text-slate-800">Vendor Directory</h2>
+        {% if user.role.lower == 'admin' %}
+        <a href="{% url 'vendor_create' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">Add New Vendor</a>
+        {% endif %}
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-500">
+                <tr>
+                    <th class="p-4">Vendor Name</th>
+                    <th class="p-4">Type</th>
+                    <th class="p-4">Status</th>
+                    <th class="p-4">Balance</th>
+                    <th class="p-4 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                {% for vendor in vendors %}
+                <tr class="hover:bg-slate-50">
+                    <td class="p-4 font-bold text-slate-800">{{ vendor.name }}</td>
+                    <td class="p-4 text-sm text-slate-500">{{ vendor.vendor_type }}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded-full text-[10px] font-bold 
+                            {% if vendor.account.status == 'Paid' %}bg-green-100 text-green-700
+                            {% elif vendor.account.status == 'Partially Paid' %}bg-amber-100 text-amber-700
+                            {% else %}bg-red-100 text-red-700{% endif %}">
+                            {{ vendor.account.status|upper }}
+                        </span>
+                    </td>
+                    <td class="p-4 font-bold text-slate-900">KES {{ vendor.account.current_balance }}</td>
+                    <td class="p-4 text-right">
+                        <a href="{% url 'vendor_detail' vendor.pk %}" class="text-blue-600 hover:underline text-sm">View Details</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="p-20 text-center">
+                        <i class="fa-solid fa-store text-4xl text-slate-200 mb-4 block"></i>
+                        <p class="text-slate-500">No vendors have been registered yet. Once vendors are added, they will appear here for management and payment tracking.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

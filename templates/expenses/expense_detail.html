@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    <div class="flex items-center justify-between mb-8">
+        <a href="{% url 'expense_list' %}" class="text-slate-500 hover:text-blue-600 transition text-sm flex items-center font-medium">
+            <i class="fa-solid fa-arrow-left mr-2"></i> Back to All Expenses
+        </a>
+        <div class="flex gap-3">
+            {% if expense.status == 'Pending' %}
+                <a href="{% url 'expense_update' expense.pk %}" class="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-50 transition">
+                    <i class="fa-solid fa-pen mr-2"></i> Edit Claim
+                </a>
+            {% endif %}
+            
+            {% if user.role.lower in 'manager,director' %}
+                <a href="{% url 'expense_approve' expense.pk %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-100">
+                    <i class="fa-solid fa-shield-check mr-2"></i> Review / Approve
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-1 rounded">Reference #{{ expense.id|stringformat:"05d" }}</span>
+                        <h2 class="text-3xl font-black text-slate-900 mt-2">KES {{ expense.amount }}</h2>
+                        <p class="text-slate-500 font-medium">{{ expense.category }} Expense</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider 
+                            {% if expense.status == 'Approved' %}bg-green-100 text-green-700
+                            {% elif expense.status == 'Rejected' %}bg-red-100 text-red-700
+                            {% else %}bg-amber-100 text-amber-700{% endif %}">
+                            {{ expense.status }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-4 border-t border-slate-50">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Description</h3>
+                    <p class="text-slate-700 leading-relaxed text-lg">{{ expense.description }}</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Linked Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% if expense.related_vehicle %}
+                    <div class="flex items-center p-4 bg-slate-50 rounded-2xl">
+                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fa-solid fa-truck-fast"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Vehicle</p>
+                            <p class="font-bold text-slate-800">{{ expense.related_vehicle.plate_number }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if expense.related_vendor %}
+                    <div class="flex items-center p-4 bg-slate-50 rounded-2xl">
+                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Vendor</p>
+                            <p class="font-bold text-slate-800">{{ expense.related_vendor.name }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="flex items-center p-4 bg-slate-50 rounded-2xl">
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fa-solid fa-credit-card"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Payment Method</p>
+                            <p class="font-bold text-slate-800">{{ expense.payment_method }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Audit Trail</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="w-2 h-2 rounded-full bg-blue-400 mt-1.5 mr-3"></div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">Submitted By</p>
+                            <p class="text-xs text-slate-500">{{ expense.submitted_by.email }}</p>
+                            <p class="text-[10px] text-slate-400">{{ expense.created_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                    </div>
+                    {% if expense.approved_by %}
+                    <div class="flex items-start">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400 mt-1.5 mr-3"></div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">Approved By</p>
+                            <p class="text-xs text-slate-500">{{ expense.approved_by.email }}</p>
+                            <p class="text-[10px] text-slate-400">{{ expense.updated_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Digital Receipt</h3>
+                {% if expense.receipt %}
+                    <div class="border-2 border-dashed border-slate-100 rounded-2xl p-4 text-center">
+                        <i class="fa-solid fa-file-invoice text-3xl text-slate-200 mb-3 block"></i>
+                        <p class="text-xs text-slate-500 mb-4 truncate">{{ expense.receipt.name }}</p>
+                        <a href="{{ expense.receipt.url }}" target="_blank" class="inline-block bg-slate-800 text-white text-xs px-4 py-2 rounded-lg font-bold hover:bg-slate-900 transition">
+                            View Receipt
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-6">
+                        <p class="text-xs text-slate-400 italic">No receipt uploaded.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
