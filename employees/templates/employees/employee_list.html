@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Personnel & Payouts{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-slate-950 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden border border-slate-800">
+        <div class="relative z-10">
+            <div class="inline-flex items-center space-x-2 bg-blue-500/10 border border-blue-500/20 px-4 py-1.5 rounded-full mb-4">
+                <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Payroll Authorization Mode</span>
+            </div>
+            <h2 class="text-4xl font-black tracking-tighter uppercase">Nyutu <span class="text-blue-500">Personnel</span></h2>
+            <p class="text-slate-400 font-medium italic">Authorized view for wage disbursements and identity verification.</p>
+        </div>
+        
+        <div class="relative z-10 bg-slate-900/50 backdrop-blur-md border border-slate-800 p-6 rounded-2xl flex gap-8">
+            <div class="text-right">
+                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Active Staff</p>
+                <p class="text-2xl font-black text-white">{{ employees.count }}</p>
+            </div>
+            <div class="w-px bg-slate-800"></div>
+            <div class="text-right">
+                <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">M-Pesa Verified</p>
+                <p class="text-2xl font-black text-emerald-400">Yes</p>
+            </div>
+        </div>
+        <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]"></div>
+    </div>
+
+    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-xl overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/50 border-b border-slate-100">
+                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Employee Identity</th>
+                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">ID Number</th>
+                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">M-Pesa (Phone)</th>
+                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Balance Due</th>
+                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Command</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for employee in employees %}
+                <tr class="hover:bg-slate-50/50 transition-all group">
+                    <td class="px-8 py-6">
+                        <div class="flex items-center">
+                            {% if employee.passport_photo %}
+                                <img src="{{ employee.passport_photo.url }}" class="w-12 h-12 rounded-2xl object-cover mr-4 shadow-lg border border-slate-200">
+                            {% else %}
+                                <div class="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white mr-4 font-black shadow-lg">
+                                    {{ employee.name|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+                            <div>
+                                <p class="text-sm font-black text-slate-800 tracking-tight">{{ employee.name }}</p>
+                                <p class="text-[10px] text-blue-600 font-bold uppercase tracking-wide">Daily: KES {{ employee.salary_per_day }}</p>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td class="px-8 py-6">
+                        <div class="flex items-center space-x-2 text-slate-600">
+                            <i class="fa-solid fa-id-card text-slate-300 text-xs"></i>
+                            <span class="text-sm font-mono font-bold">{{ employee.id_number|default:"N/A" }}</span>
+                        </div>
+                    </td>
+
+                    <td class="px-8 py-6">
+                        <div class="flex items-center space-x-2 text-slate-700">
+                            <i class="fa-solid fa-mobile-screen text-emerald-500 text-xs"></i>
+                            <span class="text-sm font-mono font-bold">{{ employee.phone }}</span>
+                        </div>
+                    </td>
+
+                    <td class="px-8 py-6">
+                        <div class="bg-slate-50 px-4 py-2 rounded-xl inline-block border border-slate-100">
+                            <p class="text-xs font-black text-slate-900">KES {{ employee.payroll_account.balance_due|default:"0.00" }}</p>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">Earned: {{ employee.payroll_account.total_earned }}</p>
+                        </div>
+                    </td>
+
+                    <td class="px-8 py-6 text-right">
+                        <div class="flex justify-end items-center space-x-3">
+                            {% if user.role.lower == 'director' or user.role.lower == 'manager' %}
+                                {% if employee.payroll_account.balance_due > 0 %}
+                                    <form action="{% url 'process_payment' employee.id %}" method="POST" onsubmit="return confirm('Release wage payment of KES {{ employee.payroll_account.balance_due }} to {{ employee.name }}?')">
+                                        {% csrf_token %}
+                                        <button type="submit" class="bg-emerald-600 hover:bg-slate-950 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-100 flex items-center group-hover:-translate-y-1">
+                                            <i class="fa-solid fa-money-bill-transfer mr-2"></i> Release Wage
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <div class="flex items-center space-x-2 text-slate-300">
+                                        <i class="fa-solid fa-circle-check text-xs"></i>
+                                        <span class="text-[10px] font-black uppercase tracking-widest">Cleared</span>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if user.role.lower == 'admin' %}
+                                <a href="{% url 'employee_update' employee.pk %}" class="p-3 bg-slate-100 text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-8 py-20 text-center">
+                        <i class="fa-solid fa-user-slash text-slate-200 text-4xl mb-4"></i>
+                        <p class="text-slate-400 text-xs font-black uppercase tracking-widest">No staff records found in system.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex items-center justify-center space-x-2 text-slate-400">
+        <i class="fa-solid fa-shield-halved text-[10px]"></i>
+        <p class="text-[9px] font-bold uppercase tracking-[0.2em] italic">All transactions are logged against Director ID: {{ user.id }}</p>
+    </div>
+</div>
+{% endblock %}

@@ -4,9 +4,10 @@ from django.utils import timezone
 from django.db.models import Sum
 from django.http import HttpResponseForbidden
 from django.contrib import messages
-
-from .models import Employee, EmployeeHistory, Attendance
+from django.db import transaction
+from .models import Employee, EmployeeHistory, Attendance ,Payment
 from .forms import EmployeeForm
+import uuid
 
 @login_required
 def employee_list(request):
@@ -168,3 +169,51 @@ def delete_employee(request, pk):
     )
     messages.info(request, f"Record for {employee.name} has been archived.")
     return redirect('employee_list')
+
+@login_required
+def process_payment(request, employee_id):
+    if request.user.role.lower() not in ['director', 'manager']:
+        messages.error(request, "Unauthorized: Only leadership can process payments.")
+        return redirect('director_employee_payout')
+
+    employee = get_object_or_404(Employee, id=employee_id)
+    account = employee.payroll_account
+    amount_to_pay = account.balance_due
+
+    if amount_to_pay <= 0:
+        messages.warning(request, f"No balance due for {employee.name}.")
+        return redirect('director_employee_payout')
+
+    try:
+        with transaction.atomic():
+            # 1. Create the Payment History Record
+            Payment.objects.create(
+                employee=employee,
+                amount=amount_to_pay,
+                reference_number=f"NYU-{uuid.uuid4().hex[:8].upper()}", # Placeholder for M-Pesa Ref
+                paid_by=request.user
+            )
+
+            # 2. Update the Employee Account
+            account.total_paid += amount_to_pay
+            account.save()
+
+            messages.success(request, f"Successfully paid KES {amount_to_pay} to {employee.name}.")
+    except Exception as e:
+        messages.error(request, f"Payment failed: {str(e)}")
+
+    return redirect('director_employee_payout')
+
+@login_required
+def director_employee_payout_list(request):
+    """
+    The Director's specialized view to see ID numbers, 
+    M-Pesa numbers, and balances to be paid.
+    """
+    # Fetch employees and their linked payroll accounts
+    employees = Employee.objects.filter(deleted_at__isNull=True).select_related('payroll_account')
+    
+    return render(request, 'employees/director_payout_list.html', {
+        'employees': employees,
+        'today': timezone.now(),
+    })

@@ -44,10 +44,10 @@
                         </div>
                     </td>
                     <td class="px-6 py-5 text-right">
-                        <span class="text-sm font-black text-slate-700 font-mono">KES {{ account.current_balance|floatformat:2 }}</span>
+                        <span class="text-sm font-black text-slate-700 font-mono">KES {{ account.debt_balance|floatformat:2 }}</span>
                     </td>
                     <td class="px-6 py-5 text-center">
-                        {% if account.current_balance > 50000 %}
+                        {% if account.debt_balance > 50000 %}
                             <span class="px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-black uppercase rounded-full">High Priority</span>
                         {% else %}
                             <span class="px-3 py-1 bg-amber-100 text-amber-700 text-[10px] font-black uppercase rounded-full">Pending</span>

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+    
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tight uppercase">Command Centre</h2>
+            <p class="text-slate-500 text-sm font-medium italic">Nyutu Ventures: Real-time Liabilities & Operations</p>
+        </div>
+        <div class="bg-slate-950 px-8 py-5 rounded-[2rem] shadow-2xl border-l-4 border-emerald-500">
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total System Payables</p>
+            <p class="text-2xl font-black text-emerald-400 font-mono tracking-tighter">
+                <span class="text-xs mr-1 text-slate-500">KES</span>{{ total_liabilities|floatformat:2 }}
+            </p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Staff On-Site</p>
+            <p class="text-2xl font-black text-slate-800 tracking-tighter">{{ present_today }} <span class="text-xs text-slate-300">/ {{ total_staff }}</span></p>
+        </div>
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Fleet Active</p>
+            <p class="text-2xl font-black text-slate-800 tracking-tighter">12 <span class="text-[10px] text-emerald-500 font-black ml-2 uppercase italic">● Live</span></p>
+        </div>
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm border-b-4 border-rose-100">
+            <p class="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-2">Vendor Debt</p>
+            <p class="text-2xl font-black text-rose-600 font-mono tracking-tighter">{{ total_vendor_debt|floatformat:0 }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm border-b-4 border-amber-100">
+            <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-2">Unpaid Wages</p>
+            <p class="text-2xl font-black text-amber-600 font-mono tracking-tighter">{{ total_employee_debt|floatformat:0 }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Pending Wages</h3>
+                <span class="px-3 py-1 bg-amber-100 text-amber-700 text-[9px] font-black rounded-full uppercase">Action Required</span>
+            </div>
+            <div class="divide-y divide-slate-50 overflow-y-auto max-h-[400px]">
+                {% for account in employee_debts %}
+                <div class="p-6 flex items-center justify-between hover:bg-slate-50/80 transition-all">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mr-4 text-slate-400">
+                            <i class="fa-solid fa-user-check text-xs"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-black text-slate-800 tracking-tight">{{ account.employee.name }}</p>
+                            <p class="text-[10px] text-slate-400 font-mono font-bold">{{ account.employee.phone }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-black text-slate-900 font-mono mb-2">KES {{ account.balance|floatformat:2 }}</p>
+                        <a href="{% url 'director_employee_payout' %}" class="bg-emerald-600 hover:bg-slate-950 text-white text-[9px] font-black uppercase px-4 py-2 rounded-xl transition-all inline-block shadow-lg shadow-emerald-100">
+                            Release
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-20 text-center text-slate-300 font-black text-[10px] uppercase">All wages cleared</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-widest">Vendor Payables</h3>
+                <span class="px-3 py-1 bg-rose-100 text-rose-700 text-[9px] font-black rounded-full uppercase">Outstanding</span>
+            </div>
+            <div class="divide-y divide-slate-50 overflow-y-auto max-h-[400px]">
+                {% for account in vendor_debts %}
+                <div class="p-6 flex items-center justify-between hover:bg-slate-50/80 transition-all">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mr-4 text-slate-400">
+                            <i class="fa-solid fa-store text-xs"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-black text-slate-800 tracking-tight">{{ account.vendor.name }}</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{{ account.vendor.vendor_type }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-black text-slate-900 font-mono mb-1">KES {{ account.balance|floatformat:2 }}</p>
+                        <span class="text-[8px] font-black text-rose-500 bg-rose-50 px-2 py-0.5 rounded uppercase tracking-widest">Unpaid Balance</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-20 text-center text-slate-300 font-black text-[10px] uppercase tracking-widest">No outstanding debt</div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <h3 class="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] mb-6">Live Asset Deployment</h3>
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
+            <div class="p-4 border border-slate-50 bg-slate-50/30 rounded-2xl text-center group hover:border-emerald-200 transition-all">
+                <i class="fa-solid fa-truck text-slate-400 mb-2 group-hover:text-emerald-500"></i>
+                <p class="text-xs font-black text-slate-800 tracking-tighter">KCY 123X</p>
+                <p class="text-[8px] text-emerald-500 font-black uppercase tracking-widest mt-1">On Transit</p>
+            </div>
+            </div>
+    </div>
+</div>
+{% endblock %}

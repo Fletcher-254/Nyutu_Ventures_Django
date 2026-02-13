@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
+from django.db.models import Sum , F
 from django.contrib import messages
 from .models import Vendor, VendorAccount, VendorPayment
 from .forms import VendorForm, VendorPaymentForm
@@ -30,16 +30,16 @@ def vendor_list(request):
 
 @login_required
 def unpaid_vendors(request):
-    """
-    The Financial View: Only shows vendors with outstanding balances.
-    Usually restricted to Director/Manager in your sidebar logic.
-    """
-    # Filter for accounts where balance is greater than 0
-    accounts = VendorAccount.objects.filter(current_balance__gt=0).select_related('vendor').order_by('-current_balance')
-    
-    # Calculate the total debt across all vendors
-    total_outstanding = accounts.aggregate(Sum('current_balance'))['current_balance__sum'] or 0
-    
+    # 1. Calculate the balance on the fly using annotate
+    # This creates a 'temporary' database field called 'debt_balance'
+    accounts = VendorAccount.objects.annotate(
+        debt_balance=F('total_owed') - F('total_paid')
+    ).filter(debt_balance__gt=0).order_by('-debt_balance')
+
+    # 2. Calculate the total for the red header card
+    total_stats = accounts.aggregate(total=Sum('debt_balance'))
+    total_outstanding = total_stats['total'] or 0
+
     return render(request, 'vendors/unpaid_vendors.html', {
         'accounts': accounts,
         'total_outstanding': total_outstanding

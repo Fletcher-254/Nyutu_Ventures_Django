@@ -3,101 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nyutu ERP | {% block title %}{% endblock %}</title>
+    <title>Nyutu Ventures | Command Centre</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-
-        /* HIGH-VISIBILITY SCROLLBAR */
-        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { 
-            background: #cbd5e1; border-radius: 10px; border: 2px solid #f1f5f9; 
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
-
-        /* Sidebar Scrollbar */
-        aside .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
-        aside .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border: 2px solid #0f172a; }
-
-        /* Login Background Animation */
-        .bg-mesh {
-            background-color: #f8fafc;
-            background-image: radial-gradient(at 0% 0%, hsla(210,100%,93%,1) 0, transparent 50%), 
-                              radial-gradient(at 50% 0%, hsla(220,100%,93%,1) 0, transparent 50%), 
-                              radial-gradient(at 100% 0%, hsla(230,100%,93%,1) 0, transparent 50%);
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
-<body class="{% if not user.is_authenticated %}bg-mesh{% else %}bg-slate-50{% endif %} flex h-screen overflow-hidden text-slate-900">
-    
-    {% if user.is_authenticated %}
-    <aside class="w-72 bg-slate-950 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 shadow-2xl z-20">
-        <div class="p-8 flex items-center space-x-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <i class="fa-solid fa-layer-group text-white"></i>
+<body class="bg-slate-50 text-slate-900">
+
+    <aside class="fixed inset-y-0 left-0 w-64 bg-slate-950 text-slate-300 hidden lg:flex flex-col z-50">
+        <div class="p-8 border-b border-slate-900">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <i class="fa-solid fa-bolt-lightning text-white text-sm"></i>
+                </div>
+                <span class="text-lg font-black text-white tracking-tighter uppercase">Nyutu<span class="text-blue-500">.</span></span>
             </div>
-            <span class="text-xl font-black tracking-tighter text-white">NYUTU<span class="text-blue-500">.</span></span>
         </div>
 
-        <nav class="flex-1 px-6 space-y-1 overflow-y-auto custom-scrollbar">
-            <div class="pb-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Core Operations</div>
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
+            <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 mt-4">Menu</p>
             
-            <a href="{% url 'vendor_list' %}" class="flex items-center px-4 py-3 text-sm font-bold rounded-xl hover:bg-slate-900 hover:text-white transition-all group">
-                <i class="fa-solid fa-store w-8 text-slate-500 group-hover:text-blue-400"></i> Vendors
+            <a href="{% url 'director_dashboard' %}" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all {% if request.resolver_match.url_name == 'director_dashboard' %} bg-blue-600 text-white shadow-lg shadow-blue-600/20 {% else %} hover:bg-slate-900 hover:text-white {% endif %}">
+                <i class="fa-solid fa-chart-pie text-sm"></i>
+                <span class="text-sm font-bold">Dashboard</span>
             </a>
 
-            <a href="{% if user.role.lower == 'admin' %}{% url 'admin_dashboard' %}{% else %}{% url 'director_dashboard' %}{% endif %}" 
-               class="flex items-center px-4 py-3 text-sm font-bold rounded-xl hover:bg-slate-900 hover:text-white transition-all group">
-                <i class="fa-solid fa-chart-line w-8 text-slate-500 group-hover:text-blue-400"></i> Analytics
+            <a href="{% url 'director_employee_payout' %}" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all hover:bg-slate-900 hover:text-white">
+                <i class="fa-solid fa-wallet text-sm"></i>
+                <span class="text-sm font-bold">Personnel & Payouts</span>
             </a>
 
-            {% if user.role.lower == 'director' or user.role.lower == 'manager' %}
-            <div class="pt-8 pb-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Financials</div>
-            <a href="{% url 'unpaid_vendors' %}" class="flex items-center px-4 py-3 text-sm font-bold rounded-xl hover:bg-slate-900 hover:text-white transition-all group">
-                <i class="fa-solid fa-file-invoice-dollar w-8 text-slate-500 group-hover:text-rose-400"></i> Unpaid Bills
+            <a href="{% url 'daily_attendance' %}" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all hover:bg-slate-900 hover:text-white">
+                <i class="fa-solid fa-clipboard-user text-sm"></i>
+                <span class="text-sm font-bold">Attendance</span>
             </a>
-            {% endif %}
+
+            <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all hover:bg-slate-900 hover:text-white">
+                <i class="fa-solid fa-truck-fast text-sm"></i>
+                <span class="text-sm font-bold">Fleet Tracking</span>
+            </a>
         </nav>
 
-        <div class="p-6 bg-slate-900/50 border-t border-slate-800">
-            <div class="flex items-center mb-4">
-                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs border-2 border-slate-800">
-                    {{ user.email|slice:":1"|upper }}
+        <div class="p-6 border-t border-slate-900">
+            <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-2xl">
+                <div>
+                    <p class="text-xs font-black text-white leading-none">{{ user.username|truncatechars:10 }}</p>
+                    <p class="text-[9px] font-bold text-blue-500 uppercase mt-1">{{ user.role|default:"User" }}</p>
                 </div>
-                <div class="ml-3">
-                    <p class="text-xs font-black text-white truncate w-32">{{ user.email }}</p>
-                    <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">{{ user.role }}</p>
-                </div>
+                <a href="{% url 'logout' %}" class="text-slate-500 hover:text-rose-500 transition-colors">
+                    <i class="fa-solid fa-power-off text-sm"></i>
+                </a>
             </div>
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button class="w-full py-2 bg-slate-800 hover:bg-rose-500/10 hover:text-rose-400 text-slate-400 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
-                    Sign Out
-                </button>
-            </form>
         </div>
     </aside>
-    {% endif %}
 
-    <main class="flex-1 flex flex-col overflow-hidden relative">
-        {% if user.is_authenticated %}
-        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-10">
-            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                System Status: <span class="text-emerald-500">Secure & Active</span>
-            </div>
-            <div class="text-slate-500 text-[11px] font-bold italic">
-                {{ now|date:"l, d F Y" }}
-            </div>
-        </header>
+    <main class="lg:ml-64 min-h-screen p-8">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-6 p-4 rounded-2xl text-xs font-black uppercase tracking-widest {% if message.tags == 'success' %} bg-emerald-50 text-emerald-600 border border-emerald-100 {% else %} bg-rose-50 text-rose-600 border border-rose-100 {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
         {% endif %}
 
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-10">
-            {% block content %}{% endblock %}
-        </div>
+        {% block content %}{% endblock %}
     </main>
+
 </body>
 </html>

@@ -35,4 +35,27 @@ class Attendance(models.Model):
     is_present = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('employee', 'date')      
+        unique_together = ('employee', 'date')     
+
+
+# employees/models.py additions
+class EmployeeAccount(models.Model):
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE, related_name='payroll_account')
+    total_earned = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    total_paid = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
+    @property
+    def balance_due(self):
+        return self.total_earned - self.total_paid
+
+class Payment(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='payments')
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    reference_number = models.CharField(max_length=100, unique=True) # M-Pesa Receipt No.
+    date_paid = models.DateTimeField(auto_now_add=True)
+    paid_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f"{self.employee.name} - KES {self.amount}"        
+
+     
