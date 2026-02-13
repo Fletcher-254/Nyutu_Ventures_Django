@@ -100,14 +100,11 @@ def expense_create(request):
         form = ExpenseForm(request.POST, request.FILES)
         if form.is_valid():
             expense = form.save(commit=False)
-            expense.submitted_by = request.user
+            expense.submitted_by = request.user  # Assign the logged-in user
             expense.save()
-            messages.success(request, f"Expense of KES {expense.amount} logged successfully!")
-            return redirect('expense_list')
-        else:
-            # If form is invalid, Django will re-render the page with errors.
-            messages.error(request, "There was an error in your submission. Please check the red fields.")
+            messages.success(request, "Expense recorded and logged successfully.")
+            return redirect('admin_dashboard') # or your expense list
     else:
         form = ExpenseForm()
     
-    return render(request, 'expenses/expense_form.html', {'form': form, 'title': 'Log New Expense'})
+    return render(request, 'expenses/expense_form.html', {'form': form})

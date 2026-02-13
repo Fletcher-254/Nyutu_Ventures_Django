@@ -23,6 +23,9 @@ class Expense(models.Model):
         ('Rejected', 'Rejected'),
     ]
 
+    fuel_liters = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    odometer_reading = models.PositiveIntegerField(null=True, blank=True)
+
     date = models.DateTimeField()
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)

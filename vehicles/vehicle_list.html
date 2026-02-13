@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+    
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+            <h2 class="text-2xl font-semibold text-slate-900 tracking-tight">Fleet Management</h2>
+            <p class="text-sm text-slate-500 font-medium">Monitoring {{ total_count }} active units and operational costs</p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            {% if user.role.lower == 'admin' %}
+            <a href="{% url 'vehicle_create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center">
+                <i class="fa-solid fa-plus mr-2 text-xs"></i> Register Vehicle
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Total Vehicles</p>
+            <div class="flex items-end justify-between">
+                <span class="text-3xl font-bold text-slate-900">{{ total_count }}</span>
+                <i class="fa-solid fa-truck-pickup text-slate-100 text-4xl"></i>
+            </div>
+        </div>
+        
+        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Fuel Consumption (MTD)</p>
+            <div class="flex items-end justify-between">
+                <div>
+                    <span class="text-2xl font-bold text-slate-900">KES 142,500</span>
+                    <p class="text-[10px] text-emerald-600 font-bold mt-1">↑ 12% vs last month</p>
+                </div>
+                <i class="fa-solid fa-gas-pump text-rose-50 text-4xl"></i>
+            </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+            <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Fleet Availability</p>
+            <div class="flex items-end justify-between">
+                <span class="text-3xl font-bold text-slate-900">94%</span>
+                <div class="w-12 h-12 rounded-full border-4 border-emerald-500 border-t-slate-100"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/50 border-b border-slate-100">
+                    <th class="px-8 py-5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Vehicle Details</th>
+                    <th class="px-8 py-5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Type</th>
+                    <th class="px-8 py-5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center">Status</th>
+                    <th class="px-8 py-5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-right">Fuel Logs</th>
+                    <th class="px-8 py-5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-right">Command</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for vehicle in vehicles %}
+                <tr class="hover:bg-slate-50/50 transition-colors group">
+                    <td class="px-8 py-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 mr-4 border border-slate-200">
+                                <i class="fa-solid fa-truck-moving text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-900 tracking-tight">{{ vehicle.plate_number }}</p>
+                                <p class="text-[11px] text-slate-400 font-medium">{{ vehicle.make }} {{ vehicle.model }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-8 py-6">
+                        <span class="text-sm text-slate-600 font-medium">{{ vehicle.vehicle_type|default:"Commercial" }}</span>
+                    </td>
+                    <td class="px-8 py-6 text-center">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 uppercase">
+                            Active
+                        </span>
+                    </td>
+                    <td class="px-8 py-6 text-right">
+                        <p class="text-sm font-bold text-slate-900 font-mono">KES 14,200</p>
+                        <p class="text-[10px] text-slate-400 uppercase">Last 30 Days</p>
+                    </td>
+                    <td class="px-8 py-6 text-right">
+                        <div class="flex justify-end space-x-2">
+                            <a href="{% url 'vehicle_update' vehicle.pk %}" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                                <i class="fa-solid fa-pen-to-square text-xs"></i>
+                            </a>
+                            <a href="#" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+                                <i class="fa-solid fa-gas-pump text-xs"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

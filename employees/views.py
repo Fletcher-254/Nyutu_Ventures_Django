@@ -34,7 +34,7 @@ def employee_list(request):
     else:
         form = EmployeeForm()
 
-    return render(request, 'employees/list.html', {
+    return render(request, 'employees/employee_list.html', {
         'employees': employees, 
         'form': form, 
         'total_daily_salary': total_daily_salary
@@ -211,7 +211,7 @@ def director_employee_payout_list(request):
     M-Pesa numbers, and balances to be paid.
     """
     # Fetch employees and their linked payroll accounts
-    employees = Employee.objects.filter(deleted_at__isNull=True).select_related('payroll_account')
+    employees = Employee.objects.filter(deleted_at__isnull=True).select_related('payroll_account')
     
     return render(request, 'employees/director_payout_list.html', {
         'employees': employees,

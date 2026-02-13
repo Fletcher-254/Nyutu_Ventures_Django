@@ -1,77 +1,92 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="space-y-8">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="space-y-8 animate-in fade-in duration-500">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-            <h2 class="text-2xl font-black text-slate-800 tracking-tight">Accounts Payable</h2>
-            <p class="text-sm text-slate-500 font-medium">Summary of all outstanding vendor balances</p>
+            <h2 class="text-2xl font-semibold text-slate-900 tracking-tight">Accounts Payable</h2>
+            <p class="text-sm text-slate-500 font-medium">Detailed oversight of outstanding vendor obligations</p>
         </div>
         
-        <div class="bg-rose-50 border border-rose-100 rounded-2xl p-4 flex items-center shadow-sm">
-            <div class="w-12 h-12 bg-rose-500 rounded-xl flex items-center justify-center text-white mr-4 shadow-lg shadow-rose-200">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 flex items-center shadow-sm min-w-[280px]">
+            <div class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600 mr-4">
                 <i class="fa-solid fa-file-invoice-dollar text-xl"></i>
             </div>
             <div>
-                <p class="text-[10px] font-black text-rose-400 uppercase tracking-widest">Total Outstanding</p>
-                <p class="text-2xl font-black text-rose-700 font-mono">KES {{ total_outstanding|floatformat:2 }}</p>
+                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Total Liabilities</p>
+                <p class="text-2xl font-bold text-slate-900 font-mono tracking-tighter">
+                    <span class="text-sm font-medium text-slate-400 mr-1">KES</span>{{ total_outstanding|floatformat:2 }}
+                </p>
             </div>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-50 border-b border-slate-100">
-                    <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Vendor Details</th>
-                    <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Balance Due</th>
-                    <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Status</th>
-                    <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-50">
-                {% for account in accounts %}
-                <tr class="hover:bg-slate-50/50 transition-colors">
-                    <td class="px-6 py-5">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 mr-3">
-                                <i class="fa-solid fa-store text-sm"></i>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-100">
+                        <th class="px-6 py-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Vendor Entity</th>
+                        <th class="px-6 py-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-right">Balance Due</th>
+                        <th class="px-6 py-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center">Settlement Status</th>
+                        <th class="px-6 py-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-right">Registry Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for account in accounts %}
+                    <tr class="hover:bg-slate-50/50 transition-colors group">
+                        <td class="px-6 py-5">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center text-slate-400 mr-4 group-hover:bg-white group-hover:border-blue-100 group-hover:text-blue-500 transition-all shadow-sm">
+                                    <i class="fa-solid fa-store text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-900">{{ account.vendor.name }}</p>
+                                    <p class="text-[12px] text-slate-400 font-medium italic">{{ account.vendor.contact_person|default:"Operations Contact" }}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-800">{{ account.vendor.name }}</p>
-                                <p class="text-[11px] text-slate-500 font-medium italic">{{ account.vendor.contact_person }}</p>
+                        </td>
+
+                        <td class="px-6 py-5 text-right">
+                            <span class="text-sm font-bold text-slate-700 font-mono tracking-tight">
+                                KES {{ account.debt_balance|floatformat:2 }}
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-5 text-center">
+                            {% if account.debt_balance > 50000 %}
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-100 uppercase tracking-wide">
+                                    <span class="w-1.5 h-1.5 bg-rose-500 rounded-full mr-2"></span> High Priority
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 uppercase tracking-wide">
+                                    Standard
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-5 text-right">
+                            <a href="{% url 'record_payment' account.vendor.id %}" 
+                               class="inline-flex items-center px-4 py-2 bg-white border border-slate-200 hover:border-blue-600 hover:text-blue-600 text-slate-600 text-[11px] font-semibold uppercase rounded-lg transition-all shadow-sm">
+                                <i class="fa-solid fa-money-bill-transfer mr-2 text-[10px]"></i> 
+                                Settle Balance
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-20 text-center">
+                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-50 text-slate-300 mb-4 border border-slate-100">
+                                <i class="fa-solid fa-check-double text-2xl"></i>
                             </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-5 text-right">
-                        <span class="text-sm font-black text-slate-700 font-mono">KES {{ account.debt_balance|floatformat:2 }}</span>
-                    </td>
-                    <td class="px-6 py-5 text-center">
-                        {% if account.debt_balance > 50000 %}
-                            <span class="px-3 py-1 bg-rose-100 text-rose-700 text-[10px] font-black uppercase rounded-full">High Priority</span>
-                        {% else %}
-                            <span class="px-3 py-1 bg-amber-100 text-amber-700 text-[10px] font-black uppercase rounded-full">Pending</span>
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-5 text-right">
-                        <a href="{% url 'record_payment' account.vendor.id %}" 
-                           class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold uppercase rounded-lg transition shadow-md shadow-blue-200">
-                            <i class="fa-solid fa-receipt mr-2"></i> Pay Vendor
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="px-6 py-12 text-center">
-                        <div class="text-slate-300 mb-2">
-                            <i class="fa-solid fa-circle-check text-4xl"></i>
-                        </div>
-                        <p class="text-slate-500 font-bold uppercase tracking-widest text-xs">All accounts cleared!</p>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            <h3 class="text-sm font-semibold text-slate-900">All Accounts Cleared</h3>
+                            <p class="text-xs text-slate-400 mt-1">No outstanding vendor liabilities are currently recorded.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

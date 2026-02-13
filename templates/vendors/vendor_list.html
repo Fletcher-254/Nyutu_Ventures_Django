@@ -1,52 +1,91 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="max-w-6xl mx-auto py-8">
-    <div class="flex justify-between items-center mb-8">
-        <h2 class="text-2xl font-bold text-slate-800">Vendor Directory</h2>
+<div class="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+    
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-semibold text-slate-900 tracking-tight">Vendor Directory</h2>
+            <p class="text-sm text-slate-500 font-medium">Global registry of authorized suppliers and service providers</p>
+        </div>
+        
         {% if user.role.lower == 'admin' %}
-        <a href="{% url 'vendor_create' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">Add New Vendor</a>
+        <a href="{% url 'vendor_create' %}" class="inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all shadow-sm shadow-blue-200">
+            <i class="fa-solid fa-plus mr-2 text-xs"></i> Register New Vendor
+        </a>
         {% endif %}
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-        <table class="w-full text-left">
-            <thead class="bg-slate-50 text-xs font-bold uppercase text-slate-500">
-                <tr>
-                    <th class="p-4">Vendor Name</th>
-                    <th class="p-4">Type</th>
-                    <th class="p-4">Status</th>
-                    <th class="p-4">Balance</th>
-                    <th class="p-4 text-right">Action</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y">
-                {% for vendor in vendors %}
-                <tr class="hover:bg-slate-50">
-                    <td class="p-4 font-bold text-slate-800">{{ vendor.name }}</td>
-                    <td class="p-4 text-sm text-slate-500">{{ vendor.vendor_type }}</td>
-                    <td class="p-4">
-                        <span class="px-2 py-1 rounded-full text-[10px] font-bold 
-                            {% if vendor.account.status == 'Paid' %}bg-green-100 text-green-700
-                            {% elif vendor.account.status == 'Partially Paid' %}bg-amber-100 text-amber-700
-                            {% else %}bg-red-100 text-red-700{% endif %}">
-                            {{ vendor.account.status|upper }}
-                        </span>
-                    </td>
-                    <td class="p-4 font-bold text-slate-900">KES {{ vendor.account.current_balance }}</td>
-                    <td class="p-4 text-right">
-                        <a href="{% url 'vendor_detail' vendor.pk %}" class="text-blue-600 hover:underline text-sm">View Details</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="p-20 text-center">
-                        <i class="fa-solid fa-store text-4xl text-slate-200 mb-4 block"></i>
-                        <p class="text-slate-500">No vendors have been registered yet. Once vendors are added, they will appear here for management and payment tracking.</p>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-100">
+                        <th class="px-6 py-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Entity Details</th>
+                        <th class="px-6 py-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Classification</th>
+                        <th class="px-6 py-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Account Status</th>
+                        <th class="px-6 py-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Ledger Balance</th>
+                        <th class="px-6 py-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-right">Reference</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for vendor in vendors %}
+                    <tr class="hover:bg-slate-50/50 transition-colors group">
+                        <td class="px-6 py-5">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center text-slate-400 mr-4 group-hover:text-blue-500 group-hover:border-blue-100 transition-all">
+                                    <i class="fa-solid fa-building-user text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-900 leading-none mb-1">{{ vendor.name }}</p>
+                                    <p class="text-[12px] text-slate-400 font-medium italic">ID: #VN-{{ vendor.id|stringformat:"04d" }}</p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-5">
+                            <span class="text-sm text-slate-600 font-medium">{{ vendor.vendor_type }}</span>
+                        </td>
+
+                        <td class="px-6 py-5">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide
+                                {% if vendor.account.status == 'Paid' %}
+                                    bg-emerald-50 text-emerald-700 border border-emerald-100
+                                {% elif vendor.account.status == 'Partially Paid' %}
+                                    bg-blue-50 text-blue-700 border border-blue-100
+                                {% else %}
+                                    bg-slate-100 text-slate-600 border border-slate-200
+                                {% endif %}">
+                                {{ vendor.account.status|default:"NO RECORD" }}
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-5">
+                            <p class="text-sm font-bold text-slate-900 font-mono">
+                                <span class="text-[10px] text-slate-400 mr-0.5">KES</span> {{ vendor.account.current_balance|floatformat:2 }}
+                            </p>
+                        </td>
+
+                        <td class="px-6 py-5 text-right">
+                            <a href="{% url 'vendor_detail' vendor.pk %}" class="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                Review Archive <i class="fa-solid fa-chevron-right ml-2 text-[10px]"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-20 text-center">
+                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-50 text-slate-300 mb-4">
+                                <i class="fa-solid fa-boxes-packing text-2xl"></i>
+                            </div>
+                            <h3 class="text-sm font-semibold text-slate-900 mb-1">Registry is Empty</h3>
+                            <p class="text-xs text-slate-400 max-w-xs mx-auto">No vendors have been registered in the system. Authorized users can add new entities using the button above.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}
